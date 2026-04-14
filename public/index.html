@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cloud Voter</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a1a; color: white; text-align: center; }
+        .vote-card { background: #2d2d2d; padding: 20px; border-radius: 15px; width: 400px; margin: 100px auto; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        button { padding: 15px 30px; margin: 10px; font-size: 18px; cursor: pointer; border: none; border-radius: 5px; transition: 0.3s; }
+        .btn-a { background: #007bff; color: white; }
+        .btn-b { background: #28a745; color: white; }
+        button:hover { opacity: 0.8; transform: scale(1.05); }
+        #results { margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="vote-card">
+        <h1>Which is better?</h1>
+        <button class="btn-a" onclick="castVote('Option A')">Option A</button>
+        <button class="btn-b" onclick="castVote('Option B')">Option B</button>
+        <div id="results">Loading results...</div>
+    </div>
+
+    <script>
+        async function getResults() {
+            const res = await fetch('/results');
+            const data = await res.json();
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = data.map(r => `<div>${r.candidate}: ${r.votes} votes</div>`).join('');
+        }
+
+        async function castVote(choice) {
+            await fetch('/vote', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ candidate: choice })
+            });
+            getResults();
+        }
+        setInterval(getResults, 2000); // Auto-refresh results every 2 seconds
+        getResults();
+    </script>
+</body>
+</html>
