@@ -25,7 +25,7 @@ spec:
           - name: DB_PASSWORD
             value: "ajinkya123"
           - name: DB_NAME
-            value: "mysql"    # <--- Updated based on your screenshot
+            value: "voting_db"    # <--- Changed from 'mysql' to 'voting_db'
           - name: DB_PORT
             value: "3306"
 ---
