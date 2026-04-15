@@ -1,0 +1,49 @@
+pipeline {
+    agent { label 'Slave-Final-Test' } 
+
+    environment {
+        DOCKERHUB_CREDENTIALS_ID = 'DOCKERHUB_CRED' // Updated to your ID
+        DOCKER_USER = 'your-dockerhub-username'
+        IMAGE_NAME = 'voting-app'
+        CLUSTER_NAME = 'voting-cluster'
+        REGION = 'us-east-1'
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                sh "docker build -t ${DOCKER_USER}/${IMAGE_NAME}:${BUILD_NUMBER} ."
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CREDENTIALS_ID}", passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER_VAR')]) {
+                        sh "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER_VAR} --password-stdin"
+                        sh "docker push ${DOCKER_USER}/${IMAGE_NAME}:${BUILD_NUMBER}"
+                        sh "docker push ${DOCKER_USER}/${IMAGE_NAME}:latest"
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to EKS') {
+            steps {
+                script {
+                    sh "aws eks update-kubeconfig --region ${REGION} --name ${CLUSTER_NAME}"
+                    // This applies everything in your k8s folder
+                    sh "kubectl apply -f k8s/"
+                    // This ensures the pods update to the new version you just built
+                    sh "kubectl set image deployment/voting-app-deploy voting-app-container=${DOCKER_USER}/${IMAGE_NAME}:${BUILD_NUMBER}"
+                }
+            }
+        }
+    }
+}
