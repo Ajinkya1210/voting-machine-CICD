@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS_ID = 'DOCKERHUB_CRED' // Updated to your ID
-        DOCKER_USER = 'your-dockerhub-username'
+        DOCKER_USER = 'ajinkyadesai2323'
         IMAGE_NAME = 'voting-app'
         CLUSTER_NAME = 'voting-cluster'
         REGION = 'us-east-1'
