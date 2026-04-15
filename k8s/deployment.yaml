@@ -14,9 +14,20 @@ spec:
     spec:
       containers:
       - name: voting-app-container
-        image: your-dockerhub-username/voting-app:latest
+        image: ajinkyadesai2323/voting-app:latest 
         ports:
-        - containerPort: 80
+        - containerPort: 3000
+        env:
+          - name: DB_HOST
+            value: "voting-db-instance-instance-1.cojuqi8e8u3q.us-east-1.rds.amazonaws.com"
+          - name: DB_USER
+            value: "admin"
+          - name: DB_PASSWORD
+            value: "ajinkya123"
+          - name: DB_NAME
+            value: "mysql"    # <--- Updated based on your screenshot
+          - name: DB_PORT
+            value: "3306"
 ---
 apiVersion: v1
 kind: Service
@@ -25,7 +36,7 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-  - port: 80        # This is what you type in the browser
-    targetPort: 3000 # This MUST match what Node.js uses (3000)
+  - port: 80        
+    targetPort: 3000 
   selector:
     app: voting-app
