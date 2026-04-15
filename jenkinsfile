@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'Slave-Final-Test' } 
+    agent { label 'voting-node' } 
 
     environment {
         DOCKERHUB_CREDENTIALS_ID = 'DOCKERHUB_CRED' // Updated to your ID
